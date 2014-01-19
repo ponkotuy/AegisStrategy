@@ -1,7 +1,9 @@
 package aegis.run
 
-import aegis.strategy.{WikiStrategy, DiscreteStrategy, HeadStrategy, Strategy}
-import aegis.{Trial, Game, Answer}
+import aegis.strategy._
+import aegis.Answer
+import aegis.Trial
+import aegis.Game
 
 /**
  *
@@ -29,15 +31,26 @@ object AllSampling {
   }
 
   case class SamplingResult(count: Int, damage: Double) {
-    override def toString() = (count, damage.toInt).toString()
+    override def toString = s"(count=$count, damage=${damage.toInt})"
   }
 
   def main(args: Array[String]): Unit = {
     val headSt = new HeadStrategy
     val discSt = new DiscreteStrategy(headSt)
-    println(s"HeadStrategy: ${allSampling(headSt)}")
-    println(s"DiscreteStrategy: ${allSampling(discSt)}")
-    println(s"WikiStrategy + DiscreteStrategy: ${allSampling(new WikiStrategy(discSt))}")
-    println(s"WikiStrategy + HeadStrategy: ${allSampling(new WikiStrategy(headSt))}")
+    val pointSt = new PointStrategy(new DiscretePoint)
+    val randomSt = new RandomChoiceStrategy
+    val results = List(
+      "HeadStrategy: " -> headSt,
+      "DiscreteStrategy: " -> discSt,
+      "WikiStrategy + DiscreteStrategy: " -> new WikiStrategy(discSt),
+      "WikiStrategy + HeadStrategy: " -> new WikiStrategy(headSt),
+      "PointStrategy + DiscretePoint: " -> pointSt,
+      "RandomChoiceStrategy1: " -> randomSt,
+      "RandomChoiceStrategy2: " -> randomSt,
+      "RandomChoiceStrategy3: " -> randomSt
+    ).par.map { case (title, st) => title -> allSampling(st) }
+    results.foreach { case (title, result) =>
+      println(title + result)
+    }
   }
 }

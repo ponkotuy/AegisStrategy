@@ -8,16 +8,17 @@ package aegis
 class Answer(val a: Int, val b: Int, val c: Int) {
   import Answer._
 
-  def check(hitBlow: HitBlow, cand: Seq[Answer] = allAnswer()): Seq[Answer] =
+  def check(hitBlow: HitBlow, cand: TraversableOnce[Answer] = allAnswer()): TraversableOnce[Answer] =
     cand.filter(_.hitBlow(this) == hitBlow)
 
   def hitBlow(other: Answer): HitBlow = {
-    val hit = List(a == other.a, b == other.b, c == other.c).count(identity)
+    val hit = Array(a == other.a, b == other.b, c == other.c).count(identity)
     val blow = (this.toSet & other.toSet).size - hit
     HitBlow(hit, blow)
   }
 
-  def toSet: Set[Int] = Set(a, b, c)
+  lazy val toSet: Set[Int] = Set(a, b, c)
+  lazy val toArray: Array[Int] = Array(a, b, c)
 
   override def equals(other: Any): Boolean = other match {
     case Answer(a_, b_, c_) => a == a_ && b == b_ && c == c_
@@ -27,7 +28,7 @@ class Answer(val a: Int, val b: Int, val c: Int) {
   override def hashCode(): Int =
     a.hashCode() + b.hashCode() + c.hashCode()
 
-  override def toString() = s"Answer($a, $b, $c)"
+  override def toString = s"Answer($a, $b, $c)"
 }
 
 object Answer {
@@ -45,10 +46,9 @@ object Answer {
   def unapply(ans: Answer): Option[(Int, Int, Int)] =
     Some((ans.a, ans.b, ans.c))
 
-  def allAnswer(numbers: Seq[Int] = 0 to 9): Seq[Answer] = {
-    numbers.foreach(n => require(0 <= n && n <= 9))
+  def allAnswer(numbers: Seq[Int] = 0 to 9): Stream[Answer] = {
     for {
-      a <- numbers
+      a <- numbers.toStream
       b <- numbers
       if a != b
       c <- numbers

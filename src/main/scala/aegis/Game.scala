@@ -7,7 +7,7 @@ package aegis
  * Date: 14/01/18
  */
 case class Game(numbers: Seq[Int], trials: List[Trial] = List.empty) {
-  lazy val candidate: Seq[Answer] =
+  lazy val candidate: Stream[Answer] =
     trials.foldLeft(Answer.allAnswer(numbers)) { case (xs, trial) =>
       trial.filter(xs)
     }

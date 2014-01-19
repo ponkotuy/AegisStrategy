@@ -7,3 +7,5 @@ release.properties
 *.iml
 .idea
 .idea/*
+gc.log
+java.hprof.txt

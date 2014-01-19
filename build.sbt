@@ -5,12 +5,13 @@ name := "AegisStrategy"
 
 version := "0.0.1-SNAPSHOT"
 
-libraryDependencies ++= Seq(
-  "org.vert-x" % "vertx-platform" % "1.3.1.final"
-)
-
 scalacOptions ++= Seq(
   "-deprecation"
 )
 
-initialCommands in console := "import aegis._"
+javaOptions ++= Seq(
+  "-Xms1G",
+  "-Xmx1G"
+)
+
+fork in run := true
