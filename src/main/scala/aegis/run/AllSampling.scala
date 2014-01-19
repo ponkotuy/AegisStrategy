@@ -44,6 +44,7 @@ object AllSampling {
       "DiscreteStrategy: " -> discSt,
       "WikiStrategy + DiscreteStrategy: " -> new WikiStrategy(discSt),
       "WikiStrategy + HeadStrategy: " -> new WikiStrategy(headSt),
+      "WikiStrategy + RandomStrategy: " -> new WikiStrategy(randomSt),
       "PointStrategy + DiscretePoint: " -> pointSt,
       "RandomChoiceStrategy1: " -> randomSt,
       "RandomChoiceStrategy2: " -> randomSt,
