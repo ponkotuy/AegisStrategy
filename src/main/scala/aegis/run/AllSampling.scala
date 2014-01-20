@@ -38,6 +38,7 @@ object AllSampling {
     val headSt = new HeadStrategy
     val discSt = new DiscreteStrategy(headSt)
     val pointSt = new PointStrategy(new DiscretePoint)
+    val newWikiSt = new PointStrategy(new NewWikiPoint)
     val randomSt = new RandomChoiceStrategy
     val results = List(
       "HeadStrategy: " -> headSt,
@@ -46,6 +47,7 @@ object AllSampling {
       "WikiStrategy + HeadStrategy: " -> new WikiStrategy(headSt),
       "WikiStrategy + RandomStrategy: " -> new WikiStrategy(randomSt),
       "PointStrategy + DiscretePoint: " -> pointSt,
+      "PointStrategy + NewWikiPoint: " ->  newWikiSt,
       "RandomChoiceStrategy1: " -> randomSt,
       "RandomChoiceStrategy2: " -> randomSt,
       "RandomChoiceStrategy3: " -> randomSt

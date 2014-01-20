@@ -1,6 +1,6 @@
 package aegis.strategy
 
-import aegis.{Answer, Game}
+import aegis.{HitBlow, Trial, Answer, Game}
 import scala.util.Random
 
 /**
@@ -34,4 +34,23 @@ class RandomPoint extends Point {
   val random = new Random
   def calc(game: Game)(ans: Answer): Double =
     random.nextDouble()
+}
+
+class NewWikiPoint extends Point {
+  import NewWikiPoint._
+  def calc(game: Game)(ans: Answer): Double = {
+    hitBlows.par.map { hitblow =>
+      val candCount = game.addTrial(Trial(ans, hitblow)).candidate.size
+      candCount*candCount
+    }.sum
+  }
+}
+
+object NewWikiPoint {
+  val hitBlows: Seq[HitBlow] = for {
+    hit <- 0 to 3
+    blow <- 0 to 3
+    if (hit + blow) <= 3
+    if !(hit == 2 && blow == 1)
+  } yield HitBlow(hit, blow)
 }
