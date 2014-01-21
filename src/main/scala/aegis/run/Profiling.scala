@@ -31,12 +31,16 @@ object Profiling {
 
   @inline def toStr3(x: Int): String = "%03d".format(x)
 
-  val allAnswer: Stream[(Int, String)] =
-    (12 to 987).toStream.map(x => x -> toStr3(x))
-      .filter { case (num, str) => str(0) != str(1) && str(1) != str(2) && str(2) != str(0) }
-
-//  @inline def hit(xs: String, ys: String): Int =
-//    xs.zip(ys).count { case (x, y) => x == y }
+  val allAnswer: Stream[(Int, String)] = {
+    var i = 12
+    val builder = Stream.newBuilder[(Int, String)]
+    while(i <= 987) {
+      val str = toStr3(i)
+      if(str(0) != str(1) && str(1) != str(2) && str(2) != str(0)) builder += ((i, str))
+      i += 1
+    }
+    builder.result()
+  }
 
   def hit(xs: String, ys: String): Int =
     f(xs(0), ys(0)) + f(xs(1), ys(1)) +  f(xs(2), ys(2))
