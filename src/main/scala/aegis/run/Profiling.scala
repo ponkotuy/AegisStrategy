@@ -15,43 +15,51 @@ object Profiling {
       }
     }
     printProfile("New") {
-      allAnswer.foreach { case (ans, ansStr) =>
-        assert(candidates(0, 0)(ans, ansStr).size == 210)
+      allAnswer.foreach { ans =>
+        assert(candidates(0, 0)(ans).size == 210)
       }
     }
   }
 
-  def candidates(hit: Int, blow: Int)(ans: Int, ansStr: String): Stream[(Int, String)] = {
-    allAnswer.filter { case (num, str) =>
-      val h = this.hit(str, ansStr)
-      val b = this.blow(str, ansStr)
-      hit == h && blow == b
+  def candidates(hit: Int, blow: Int)(ans: Ans): Stream[Ans] = {
+    allAnswer.filter { x =>
+      hit == x.hit(ans) && blow == x.blow(ans)
     }
   }
 
-  @inline def toStr3(x: Int): String = "%03d".format(x)
-
-  val allAnswer: Stream[(Int, String)] = {
+  val allAnswer: Stream[Ans] = {
     var i = 12
-    val builder = Stream.newBuilder[(Int, String)]
+    val builder = Stream.newBuilder[Ans]
     while(i <= 987) {
-      val str = toStr3(i)
-      if(str(0) != str(1) && str(1) != str(2) && str(2) != str(0)) builder += ((i, str))
+      val ans = Ans(i)
+      val str = ans.str
+      if(str(0) != str(1) && str(1) != str(2) && str(2) != str(0)) builder += ans
       i += 1
     }
     builder.result()
   }
 
-  def hit(xs: String, ys: String): Int =
-    f(xs(0), ys(0)) + f(xs(1), ys(1)) +  f(xs(2), ys(2))
-
-  def blow(xs: String, ys: String): Int = {
-    f(xs(0), ys(1)) + f(xs(0), ys(2)) +
-      f(xs(1), ys(0)) + f(xs(1), ys(2)) +
-      f(xs(2), ys(0)) + f(xs(2), ys(1))
-  }
-
   def f[T](x: T, y: T): Int = if(x == y) 1 else 0
+
+  case class Ans(i: Int) {
+    val str = toStr3(i)
+
+    def hit(other: Ans): Int = {
+      val xs = this.str
+      val ys = other.str
+      f(xs(0), ys(0)) + f(xs(1), ys(1)) +  f(xs(2), ys(2))
+    }
+
+    def blow(other: Ans): Int = {
+      val xs = this.str
+      val ys = other.str
+      f(xs(0), ys(1)) + f(xs(0), ys(2)) +
+        f(xs(1), ys(0)) + f(xs(1), ys(2)) +
+        f(xs(2), ys(0)) + f(xs(2), ys(1))
+    }
+
+    private[this] def toStr3(x: Int): String = "%03d".format(x)
+  }
 
   def printProfile(title: String)(f: => Unit): Unit = {
     println(s"$title time: ${profile(f)/1000000.0}ms")
