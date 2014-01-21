@@ -1,6 +1,6 @@
 package aegis.strategy
 
-import aegis.{Game, Answer, Trial}
+import aegis.{Game, Answer}
 
 /**
  *

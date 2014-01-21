@@ -22,11 +22,11 @@ trait Point {
 class DiscretePoint extends Point {
   def calc(game: Game)(ans: Answer): Double = {
     val counts = game.trials
-      .flatMap(_.answer.toArray)
+      .flatMap(_.answer.str)
       .groupBy(identity)
       .mapValues(_.size)
       .withDefaultValue(0)
-    ans.toArray.map(counts).sum
+    ans.str.map(counts).sum
   }
 }
 

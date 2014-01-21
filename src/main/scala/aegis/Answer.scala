@@ -3,56 +3,70 @@ package aegis
 
 /**
  * @author ponkotuy
- * date: 2013/12/31.
+ * date: 2014/01/22
  */
-class Answer(val a: Int, val b: Int, val c: Int) {
+case class Answer(i: Int) {
   import Answer._
+  val str = toStr3(i)
 
-  def check(hitBlow: HitBlow, cand: TraversableOnce[Answer] = allAnswer()): TraversableOnce[Answer] =
-    cand.filter(_.hitBlow(this) == hitBlow)
+  def hit(y: Answer): Int = {
+    f(a, y.a) + f(b, y.b) +  f(c, y.c)
+  }
 
-  def hitBlow(other: Answer): HitBlow = {
-    val hit = Array(a == other.a, b == other.b, c == other.c).count(identity)
-    val blow = (this.toSet & other.toSet).size - hit
+  def blow(y: Answer): Int = {
+    f(a, y.b) + f(a, y.c) +
+      f(b, y.a) + f(b, y.c) +
+      f(c, y.a) + f(c, y.b)
+  }
+
+  def hitBlow(ans: Answer): HitBlow = {
+    val hit = this.hit(ans)
+    val blow = this.blow(ans)
     HitBlow(hit, blow)
   }
 
-  lazy val toSet: Set[Int] = Set(a, b, c)
-  lazy val toArray: Array[Int] = Array(a, b, c)
+  def toSet: Set[Char] = str.toSet
 
-  override def equals(other: Any): Boolean = other match {
-    case Answer(a_, b_, c_) => a == a_ && b == b_ && c == c_
-    case _ => false
-  }
-
-  override def hashCode(): Int =
-    a.hashCode() + b.hashCode() + c.hashCode()
-
-  override def toString = s"Answer($a, $b, $c)"
+  def a = str(0)
+  def b = str(1)
+  def c = str(2)
 }
 
 object Answer {
-  def apply(a: Int, b: Int, c: Int): Answer = {
-    require(a < 10 && b < 10 && c < 10, "Input numbers must not be under 10.")
-    require(a != b && b != c && c != a, "Input must have different numbers.")
-    new Answer(a, b, c)
+  def allAnswers(): Stream[Answer] = {
+    var i = 12
+    val builder = Stream.newBuilder[Answer]
+    while(i <= 987) {
+      val ans = Answer(i)
+      if(ans.a != ans.b && ans.b != ans.c && ans.c != ans.a) builder += ans
+      i += 1
+    }
+    builder.result()
   }
 
-  def apply(xs: Seq[Int]): Answer = {
-    require(3 <= xs.size)
-    apply(xs(0), xs(1), xs(2))
+  def allAnswers(exc: Set[Char]): Stream[Answer] = {
+    var i = 12
+    val builder = Stream.newBuilder[Answer]
+    while(i <= 987) {
+      val ans = Answer(i)
+      val str = ans.str
+      if(!exc.contains(str(0)) && !exc.contains(str(1)) && !exc.contains(str(2)) &&
+        str(0) != str(1) && str(1) != str(2) && str(2) != str(0)
+      ) { builder += ans }
+      i += 1
+    }
+    builder.result()
   }
 
-  def unapply(ans: Answer): Option[(Int, Int, Int)] =
-    Some((ans.a, ans.b, ans.c))
-
-  def allAnswer(numbers: Seq[Int] = 0 to 9): Stream[Answer] = {
-    for {
-      a <- numbers.toStream
-      b <- numbers
-      if a != b
-      c <- numbers
-      if a != c && b != c
-    } yield new Answer(a, b, c)
+  def fromChars(cs: Char*): Answer = {
+    val num = cs.take(3).map(_ - '0').reduceLeft((sum, x) => sum * 10 + x)
+    Answer(num)
   }
+
+  private def toStr3(x: Int): String = {
+    if(x < 100) "0" + x.toString else x.toString
+//    "%03d".format(x)
+  }
+
+  private def f[T](x: T, y: T): Int = if(x == y) 1 else 0
 }

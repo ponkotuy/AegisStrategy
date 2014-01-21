@@ -11,7 +11,10 @@ scalacOptions ++= Seq(
 
 javaOptions ++= Seq(
   "-Xms1G",
-  "-Xmx1G"
+  "-Xmx1G",
+  "-agentlib:hprof=cpu=samples,depth=50",
+  "-verbose:gc",
+  "-Xloggc:gc.log"
 )
 
 fork in run := true
