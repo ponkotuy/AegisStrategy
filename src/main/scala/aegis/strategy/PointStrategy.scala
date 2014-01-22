@@ -42,7 +42,7 @@ class NewWikiPoint extends Point {
     hitBlows.par.map { hitblow =>
       val candCount = game.addTrial(Trial(ans, hitblow)).candidate.size
       candCount*candCount
-    }.sum
+    }.sum * -1
   }
 }
 
