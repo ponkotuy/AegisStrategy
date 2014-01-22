@@ -16,5 +16,6 @@ case class HitBlow(hit: Int, blow: Int) {
       case (1, 2) => 2.5
       case (2, 0) => 2.0
       case (3, 0) => 3.0
+      case _ => throw new IllegalArgumentException(s"Illegal hit or blow: $this")
     }
 }

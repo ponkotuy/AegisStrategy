@@ -6,15 +6,11 @@ package aegis
  * @author ponkotuy
  * Date: 14/01/18
  */
-case class Game(numbers: Seq[Int], trials: List[Trial] = List.empty) {
-  lazy val candidate: Stream[Answer] =
-    trials.foldLeft(Answer.allAnswer(numbers)) { case (xs, trial) =>
-      trial.filter(xs)
-    }
-
+case class Game(candidate: Stream[Answer], trials: List[Trial] = List.empty) {
   def isCompleted = candidate.size == 1
 
-  def addTrial(trial: Trial): Game = Game(numbers, trial :: trials)
+  def addTrial(trial: Trial): Game =
+    Game(trial.filter(candidate), trial::trials)
 
   def count: Int = trials.size
 

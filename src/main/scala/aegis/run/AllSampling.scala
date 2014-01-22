@@ -20,11 +20,11 @@ object AllSampling {
       val trial = Trial(choice, ans.hitBlow(choice))
       f(game.addTrial(trial))
     }
-    f(Game(Numbers))
+    f(Game(Answer.allAnswers()))
   }
 
   def allSampling(st: Strategy): SamplingResult = {
-    val result = Answer.allAnswer(Numbers).map(sampling(st))
+    val result = Answer.allAnswers().map(sampling(st))
     val count = result.map(_.count).sum
     val damage = result.map(_.damage).sum
     SamplingResult(count, damage)
@@ -35,6 +35,7 @@ object AllSampling {
   }
 
   def main(args: Array[String]): Unit = {
+    require(Answer.allAnswers().size == 720)
     val headSt = new HeadStrategy
     val discSt = new DiscreteStrategy(headSt)
     val pointSt = new PointStrategy(new DiscretePoint)
@@ -43,9 +44,9 @@ object AllSampling {
     val results = List(
       "HeadStrategy: " -> headSt,
       "DiscreteStrategy: " -> discSt,
-      "WikiStrategy + DiscreteStrategy: " -> new WikiStrategy(discSt),
-      "WikiStrategy + HeadStrategy: " -> new WikiStrategy(headSt),
-      "WikiStrategy + RandomStrategy: " -> new WikiStrategy(randomSt),
+      "WikiStrategy + DiscreteStrategy: " -> new WikiStrategy(0 to 9)(discSt),
+      "WikiStrategy + HeadStrategy: " -> new WikiStrategy(0 to 9)(headSt),
+      "WikiStrategy + RandomStrategy: " -> new WikiStrategy(0 to 9)(randomSt),
       "PointStrategy + DiscretePoint: " -> pointSt,
       "PointStrategy + NewWikiPoint: " ->  newWikiSt,
       "RandomChoiceStrategy1: " -> randomSt,
